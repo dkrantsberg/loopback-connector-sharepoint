@@ -5,7 +5,7 @@ const {expect} = require('chai');
 describe('CamlBuilder', () => {
   const camlBuilder = new CamlBuilder();
   describe('buildWhere()', () => {
-    it.only('test xml2js', (done) => {
+    it('test xml2js', (done) => {
       const xml = `<OrderBy>
                         <FieldRef Name ='ows_ArchiveOrder' Ascending='TRUE'/>
                         <FieldRef Name ='ows_ArchiveOrder2' Ascending='FALSE'/>

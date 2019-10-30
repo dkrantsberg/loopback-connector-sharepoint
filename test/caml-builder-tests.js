@@ -3,7 +3,20 @@ const xml2js = require('xml2js');
 const {expect} = require('chai');
 
 describe('CamlBuilder', () => {
-  const camlBuilder = new CamlBuilder();
+  let camlBuilder;
+
+  before(() => {
+    const ds = global.getDataSource();
+    const User = ds.define('User',
+      {
+        firstName: {type: String, sharepoint: {columnName: 'FirstName'}},
+        lastName: {type: String, sharepoint: {columnName: 'LastName'}},
+        email: {type: String, sharepoint: {columnName: 'Email'}},
+        age: {type: Number, sharepoint: {columnName: 'Age'}}
+      });
+    camlBuilder = new CamlBuilder(User.definition);
+  });
+
   describe('buildWhere()', () => {
     it('test xml2js', (done) => {
       const xml = `<OrderBy>
@@ -18,24 +31,24 @@ describe('CamlBuilder', () => {
     });
 
     it('simple condition', () => {
-      const where = {prop1: 'Val 1'};
+      const where = {lastName: 'Doe'};
       const result = camlBuilder.buildWhere(where);
-      const expectedResult = `<Eq><FieldRef Name="prop1"/><Value Type="Text">Val 1</Value></Eq>`;
-      expect(result).to.eql(expectedResult);
+      expect(result).to.exist;
     });
-
-    it(`'and'`, () => {
-      const where = {and: [{prop1: 'Val 1'}, {prop2: 'Val 2'}, {prop3: 'Val 3'}]};
+    it('2 conditions with logical AND', () => {
+      const where = {and: [{firstName: 'Joe'}, {lastName: 'Doe'}]};
       const result = camlBuilder.buildWhere(where);
-      const expectedResult = `<And><Eq><FieldRef Name="prop1"/><Value Type="Text">Val 1</Value></Eq><And><Eq><FieldRef Name="prop2"/><Value Type="Text">Val 2</Value></Eq><And><Eq><FieldRef Name="prop3"/><Value Type="Text">Val 3</Value></Eq></And></And></And>`;
-      expect(result).to.eql(expectedResult);
+      expect(result).to.exist;
     });
-
-    it(`'or' within 'and'`, () => {
-      const where = {and: [{or: [{prop1: 'Val 1'}, {prop2: 'Val 2'}]}, {prop3: 'Val 3'}]};
+    it('3 conditions with logical AND', () => {
+      const where = {and: [{firstName: 'Joe'}, {lastName: 'Doe'}, {age: 28}]};
       const result = camlBuilder.buildWhere(where);
-      const expectedResult = `<And><Or><Eq><FieldRef Name="prop1"/><Value Type="Text">Val 1</Value></Eq><Or><Eq><FieldRef Name="prop2"/><Value Type="Text">Val 2</Value></Eq></Or></Or><And><Eq><FieldRef Name="prop3"/><Value Type="Text">Val 3</Value></Eq></And></And>`;
-      expect(result).to.eql(expectedResult);
+      expect(result).to.exist;
+    });
+    it('3 conditions with logical AND', () => {
+      const where =  {and: [{or: [{firstName: 'Joe'},  {lastName: 'Doe'}]}, {email: 'joe.doe@company.com'}]};
+      const result = camlBuilder.buildWhere(where);
+      expect(result).to.exist;
     });
   })
 });

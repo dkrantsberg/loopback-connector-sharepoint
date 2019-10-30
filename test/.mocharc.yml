@@ -1,0 +1,5 @@
+recursive: true
+require:
+  - 'test/init.js'
+timeout: 10000
+exit: true

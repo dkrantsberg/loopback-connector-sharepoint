@@ -18,25 +18,25 @@ describe('CamlBuilder', () => {
   });
 
   describe('buildWhere()', () => {
-    it.skip('test xml2js', (done) => {
-      const xml = `   <Where>
-      <And>
-         <Eq>
-            <FieldRef Name='FirstName' />
-            <Value Type='Text'>Joe</Value>
-         </Eq>
-         <Neq>
-            <FieldRef Name='LastName' />
-            <Value Type='Text'>Doe</Value>
-         </Neq>
-      </And>
-   </Where>`;
-      const parser = new xml2js.Parser({explicitArray: false});
-      parser.parseString(xml, (err, result) => {
-        const backToXml = (new xml2js.Builder()).buildObject(result);
-        done();
-      })
-    });
+   //  it.skip('test xml2js', (done) => {
+   //    const xml = `   <Where>
+   //    <And>
+   //       <Eq>
+   //          <FieldRef Name='FirstName' />
+   //          <Value Type='Text'>Joe</Value>
+   //       </Eq>
+   //       <Neq>
+   //          <FieldRef Name='LastName' />
+   //          <Value Type='Text'>Doe</Value>
+   //       </Neq>
+   //    </And>
+   // </Where>`;
+   //    const parser = new xml2js.Parser({explicitArray: false});
+   //    parser.parseString(xml, (err, result) => {
+   //      const backToXml = (new xml2js.Builder()).buildObject(result);
+   //      done();
+   //    })
+   //  });
 
     it('simple key:value condition', () => {
       const where = {lastName: 'Doe'};
@@ -44,7 +44,7 @@ describe('CamlBuilder', () => {
       const expectedResult = `<Where><Eq><FieldRef Name="LastName"/><Value Type="Text">Doe</Value></Eq></Where>`;
       expect(result).to.eql(expectedResult);
     });
-    it.only(`'inq' condition`, () => {
+    it(`'inq' condition`, () => {
       const where = {ID: {inq: [4, 5, 6, 7]}};
       const result = camlBuilder.buildWhere(where);
       const expectedResult = `<Where><In><FieldRef Name="ID"/><Values><Value Type="Number">4</Value><Value Type="Number">5</Value><Value Type="Number">6</Value><Value Type="Number">7</Value></Values></In></Where>`;
@@ -75,4 +75,40 @@ describe('CamlBuilder', () => {
       expect(result).to.eql(expectedResult);
     });
   })
+
+  describe('buildViewFields()', () => {
+    it('should generate expected ViewFields element', () => {
+      const result = camlBuilder.buildViewFields(['firstName', 'lastName']);
+      const expectedResult = '<ViewFields><FieldRef Name="FirstName"/><FieldRef Name="LastName"/></ViewFields>';
+      expect(result).to.eql(expectedResult);
+    })
+  });
+
+  describe.only('buildOrderBy()', () => {
+    it('should order by descending ID by default', () => {
+      const result = camlBuilder.buildOrderBy();
+      const expectedResult = '<OrderBy><FieldRef Name="ID" Ascending="False"/></OrderBy>';
+      expect(result).to.eql(expectedResult);
+    });
+    it('should generate expected OrderBy for single field', () => {
+      const result = camlBuilder.buildOrderBy('firstName');
+      const expectedResult = '<OrderBy><FieldRef Name="FirstName"/></OrderBy>';
+      expect(result).to.eql(expectedResult);
+    });
+    it('should generate expected OrderBy for single field descending order', () => {
+      const result = camlBuilder.buildOrderBy('firstName DESC');
+      const expectedResult = '<OrderBy><FieldRef Name="FirstName" Ascending="FALSE"/></OrderBy>';
+      expect(result).to.eql(expectedResult);
+    });
+    it('should generate expected OrderBy for single field ascending order', () => {
+      const result = camlBuilder.buildOrderBy('firstName ASC');
+      const expectedResult = `<OrderBy><FieldRef Name="FirstName" Ascending="TRUE"/></OrderBy>`;
+      expect(result).to.eql(expectedResult);
+    });
+    it('should generate expected OrderBy for multiple fields field descending order', () => {
+      const result = camlBuilder.buildOrderBy(['lastName', 'firstName DESC']);
+      const expectedResult = '<OrderBy><FieldRef Name="LastName"/><FieldRef Name="FirstName" Ascending="FALSE"/></OrderBy>';
+      expect(result).to.eql(expectedResult);
+    });
+  });
 });

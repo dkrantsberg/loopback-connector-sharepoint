@@ -81,10 +81,14 @@ describe('CamlBuilder', () => {
       const result = camlBuilder.buildViewFields(['firstName', 'lastName']);
       const expectedResult = '<ViewFields><FieldRef Name="FirstName"/><FieldRef Name="LastName"/></ViewFields>';
       expect(result).to.eql(expectedResult);
+    });
+    it('should return empty string if no fields are specufied', () => {
+      const result = camlBuilder.buildViewFields();
+      expect(result).to.eql('');
     })
   });
 
-  describe.only('buildOrderBy()', () => {
+  describe('buildOrderBy()', () => {
     it('should order by descending ID by default', () => {
       const result = camlBuilder.buildOrderBy();
       const expectedResult = '<OrderBy><FieldRef Name="ID" Ascending="False"/></OrderBy>';
@@ -109,6 +113,18 @@ describe('CamlBuilder', () => {
       const result = camlBuilder.buildOrderBy(['lastName', 'firstName DESC']);
       const expectedResult = '<OrderBy><FieldRef Name="LastName"/><FieldRef Name="FirstName" Ascending="FALSE"/></OrderBy>';
       expect(result).to.eql(expectedResult);
+    });
+  });
+
+  describe('buildRowLimit()', () => {
+     it('should return expected RowLimit element', () => {
+       const result = camlBuilder.buildRowLimit(10);
+       const expectedResult = '<RowLimit>10</RowLimit>';
+       expect(result).to.eql(expectedResult);
+     });
+    it('should return empty string if no argum RowLimit element', () => {
+      const result = camlBuilder.buildRowLimit();
+      expect(result).to.eql('');
     });
   });
 });

@@ -14,16 +14,16 @@ const config = {
 global.config = config;
 
 let db;
-global.getDataSource = global.getSchema = function (customConfig, customClass) {
+global.getDataSource = global.getSchema = function(customConfig, customClass) {
   const ctor = customClass || DataSource;
   db = new ctor(require('../'), customConfig || config);
-  db.log = function (a) {
+  db.log = function(a) {
     console.log(a);
   };
   return db;
 };
 
-global.resetDataSourceClass = function (ctor) {
+global.resetDataSourceClass = function(ctor) {
   DataSource = ctor || juggler.DataSource;
   const promise = db ? db.disconnect() : Promise.resolve();
   db = undefined;

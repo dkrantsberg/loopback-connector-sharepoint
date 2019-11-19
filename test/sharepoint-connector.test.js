@@ -1,9 +1,5 @@
 'use strict';
-const {SharePointConnector} = require('../lib/sharepoint');
-const {SPLib} = require('../lib/sp-lib');
 const {expect} = require('chai');
-const sinon = require('sinon');
-const proxyquire = require('proxyquire');
 
 describe('SharePoint connector tests', () => {
   const ds = global.getDataSource();
@@ -99,7 +95,7 @@ describe('SharePoint connector tests', () => {
   });
 
   it('should find by id', async () => {
-    const result = await User.findById(testUsers[0].id)
+    const result = await User.findById(testUsers[0].id);
     expect(result.__data).to.eql(testUsers[0]);
   });
 

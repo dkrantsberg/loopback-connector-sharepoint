@@ -1,5 +1,5 @@
 recursive: true
-require:
+file:
   - 'test/init.js'
 timeout: 10000
 exit: true
